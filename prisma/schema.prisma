@@ -92,9 +92,11 @@ model lessons {
 }
 
 model lesson_progress {
-  id        Int @id @default(autoincrement())
-  user_id   Int
-  lesson_id Int
+  id           Int     @id @default(autoincrement())
+  user_id      Int
+  lesson_id    Int
+  last_seen    Int // seconds
+  is_completed Boolean @default(false)
 
   lesson lessons @relation(name: "lesson_progress", fields: [lesson_id], references: [id])
 }
