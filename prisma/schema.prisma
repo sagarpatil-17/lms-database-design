@@ -45,6 +45,17 @@ model courses {
 
   module     modules[]            @relation("course_module")
   instructor course_instructors[] @relation("course_instructor")
+  enrollment course_enrollments[] @relation("course_enrollment")
+}
+
+model course_enrollments {
+  id         Int      @id @default(autoincrement())
+  user_id    Int
+  course_id  Int
+  price_paid Int
+  created_at DateTime @default(now())
+
+  course courses @relation(name: "course_enrollment", fields: [course_id], references: [id])
 }
 
 model course_instructors {
