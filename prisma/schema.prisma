@@ -21,12 +21,15 @@ model users {
   status     Boolean  @default(true)
   created_at DateTime @default(now())
 
-  created_courses courses[] @relation("course_creator")
-  updated_courses courses[] @relation("course_updator")
-  created_modules modules[] @relation("module_creator")
-  updated_modules modules[] @relation("module_updator")
-  created_lessons lessons[] @relation("lesson_creator")
-  updated_lessons lessons[] @relation("lesson_updator")
+  created_courses courses[]            @relation("course_creator")
+  updated_courses courses[]            @relation("course_updator")
+  created_modules modules[]            @relation("module_creator")
+  updated_modules modules[]            @relation("module_updator")
+  created_lessons lessons[]            @relation("lesson_creator")
+  updated_lessons lessons[]            @relation("lesson_updator")
+  progress        lesson_progress[]    @relation("user_progress")
+  enrollments     course_enrollments[] @relation("user_enrollment")
+  instructor      course_instructors[] @relation("user_instructor")
 }
 
 model courses {
@@ -55,7 +58,10 @@ model course_enrollments {
   price_paid Int
   created_at DateTime @default(now())
 
-  course courses @relation(name: "course_enrollment", fields: [course_id], references: [id])
+  course courses @relation(name: "course_enrollment", fields: [course_id], references: [id], onDelete: Cascade)
+  user   users   @relation(name: "user_enrollment", fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, course_id])
 }
 
 model course_instructors {
@@ -63,7 +69,8 @@ model course_instructors {
   user_id   Int
   course_id Int
 
-  course courses @relation(name: "course_instructor", fields: [course_id], references: [id])
+  course courses @relation(name: "course_instructor", fields: [course_id], references: [id], onDelete: Cascade)
+  user   users   @relation(name: "user_instructor", fields: [user_id], references: [id], onDelete: Cascade)
 }
 
 model modules {
@@ -109,7 +116,10 @@ model lesson_progress {
   last_seen    Int // seconds
   is_completed Boolean @default(false)
 
-  lesson lessons @relation(name: "lesson_progress", fields: [lesson_id], references: [id])
+  user   users   @relation(name: "user_progress", fields: [user_id], references: [id], onDelete: Cascade)
+  lesson lessons @relation(name: "lesson_progress", fields: [lesson_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, lesson_id])
 }
 
 enum role {
