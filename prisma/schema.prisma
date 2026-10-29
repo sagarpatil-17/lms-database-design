@@ -34,7 +34,7 @@ model users {
 
 model courses {
   id          Int      @id @default(autoincrement())
-  title       String   @db.Text
+  title       String
   description String?  @db.LongText
   price       Int
   status      Boolean  @default(true)
@@ -71,11 +71,13 @@ model course_instructors {
 
   course courses @relation(name: "course_instructor", fields: [course_id], references: [id], onDelete: Cascade)
   user   users   @relation(name: "user_instructor", fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, course_id])
 }
 
 model modules {
   id         Int      @id @default(autoincrement())
-  title      String   @db.Text
+  title      String
   course_id  Int
   position   Int
   created_by Int
@@ -92,7 +94,7 @@ model modules {
 
 model lessons {
   id         Int      @id @default(autoincrement())
-  title      String   @db.Text
+  title      String
   module_id  Int
   video_url  String   @db.Text
   duration   Int?
