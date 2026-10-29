@@ -11,3 +11,96 @@ generator client {
 datasource db {
   provider = "mysql"
 }
+
+model users {
+  id         Int      @id @default(autoincrement())
+  name       String
+  email      String   @unique
+  password   String
+  role       role     @default(STUDENT)
+  status     Boolean  @default(true)
+  created_at DateTime @default(now())
+
+  created_courses courses[] @relation("course_creator")
+  updated_courses courses[] @relation("course_updator")
+  created_modules modules[] @relation("module_creator")
+  updated_modules modules[] @relation("module_updator")
+  created_lessons lessons[] @relation("lesson_creator")
+  updated_lessons lessons[] @relation("lesson_updator")
+}
+
+model courses {
+  id          Int      @id @default(autoincrement())
+  title       String   @db.Text
+  description String?  @db.LongText
+  price       Int
+  status      Boolean  @default(true)
+  created_by  Int
+  updated_by  Int?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @default(now()) @updatedAt
+
+  course_creator users  @relation(name: "course_creator", fields: [created_by], references: [id], onDelete: Restrict)
+  course_updator users? @relation(name: "course_updator", fields: [updated_by], references: [id], onDelete: SetNull)
+
+  module     modules[]            @relation("course_module")
+  instructor course_instructors[] @relation("course_instructor")
+}
+
+model course_instructors {
+  id        Int @id @default(autoincrement())
+  user_id   Int
+  course_id Int
+
+  course courses @relation(name: "course_instructor", fields: [course_id], references: [id])
+}
+
+model modules {
+  id         Int      @id @default(autoincrement())
+  title      String   @db.Text
+  course_id  Int
+  position   Int
+  created_by Int
+  updated_by Int?
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now()) @updatedAt
+
+  course         courses @relation(name: "course_module", fields: [course_id], references: [id], onDelete: Cascade)
+  module_creator users   @relation(name: "module_creator", fields: [created_by], references: [id], onDelete: Restrict)
+  module_updator users?  @relation(name: "module_updator", fields: [updated_by], references: [id], onDelete: SetNull)
+
+  lesson lessons[] @relation("module_lesson")
+}
+
+model lessons {
+  id         Int      @id @default(autoincrement())
+  title      String   @db.Text
+  module_id  Int
+  video_url  String   @db.Text
+  duration   Int?
+  position   Int
+  created_by Int
+  updated_by Int?
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now()) @updatedAt
+
+  module         modules @relation(name: "module_lesson", fields: [module_id], references: [id], onDelete: Cascade)
+  lesson_creator users   @relation(name: "lesson_creator", fields: [created_by], references: [id], onDelete: Restrict)
+  lesson_updator users?  @relation(name: "lesson_updator", fields: [updated_by], references: [id], onDelete: SetNull)
+
+  progress lesson_progress[] @relation("lesson_progress")
+}
+
+model lesson_progress {
+  id        Int @id @default(autoincrement())
+  user_id   Int
+  lesson_id Int
+
+  lesson lessons @relation(name: "lesson_progress", fields: [lesson_id], references: [id])
+}
+
+enum role {
+  STUDENT
+  INSTRUCTOR
+  ADMIN
+}
