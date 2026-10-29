@@ -30,6 +30,17 @@ model users {
   progress        lesson_progress[]    @relation("user_progress")
   enrollments     course_enrollments[] @relation("user_enrollment")
   instructor      course_instructors[] @relation("user_instructor")
+  instructor_info instructor_info[]    @relation("instructor_info")
+}
+
+model instructor_info {
+  id            Int    @id @default(autoincrement())
+  user_id       Int    @unique
+  bio           String @db.Text
+  qualification String
+  social_links  Json
+
+  user users @relation(name: "instructor_info", fields: [user_id], references: [id], onDelete: Cascade)
 }
 
 model courses {
