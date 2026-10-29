@@ -35,7 +35,7 @@ The schema is architected to handle the essential operations of an LMS ecosystem
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com
+   git clone https://github.com/sagarpatil-17/lms-database-design.git
    cd lms-database-design
    ```
 
